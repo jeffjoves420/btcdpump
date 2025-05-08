@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BTCDPUMP - Bitcoin Trading Dashboard</title>
+    <!-- Bootstrap CSS (only for responsive grid) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/technicalindicators/dist/technicalindicators.min.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="btc-logo">BTCDPUMP</div>
+        <ul class="nav-links">
+            <li><a href="index.html" aria-label="Home">Home</a></li>
+            <li><a href="https://app.hyperliquid.xyz/join/ESCANOR" aria-label="Trade">Trade</a></li>
+            <li><a href="#" aria-label="Journal">Journal</a></li>
+            <li><a href="#" aria-label="Donate">Donate</a></li>
+        </ul>
+        <div class="hamburger" aria-label="Menu" aria-expanded="false">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-container container-fluid">
+        <!-- BTC Widgets -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="btc-price card-dark">
+                    <div class="title">BTC Price</div>
+                    <div class="value">Loading...</div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="btc-mc card-dark">
+                    <div class="title">Market Cap</div>
+                    <div class="value">Loading...</div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="btc-volume card-dark">
+                    <div class="title">24h Volume</div>
+                    <div class="value">Loading...</div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="btc-sentiment card-dark">
+                    <div class="title">Market Sentiment</div>
+                    <div class="value">Loading...</div>
+                    <div class="greed-meter">
+                        <div class="greed-indicator"></div>
+                    </div>
+                    <div class="greed-labels">
+                        <span>Fear</span>
+                        <span>Neutral</span>
+                        <span>Greed</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="chart-container card-dark">
+                    <canvas id="priceChart" aria-label="BTC Price Chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Signal and Timeframe -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <div class="position-signal card-dark" id="position-signal">
+                    <div class="accuracy">
+                        <span id="accuracy-percentage">50%</span> Accuracy
+                    </div>
+                    Loading...
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="timeframe-select card-dark">
+                    <select id="timeframe" aria-label="Select timeframe">
+                        <option value="5m">5 Minutes</option>
+                        <option value="15m">15 Minutes</option>
+                        <option value="1h">1 Hour</option>
+                        <option value="4h">4 Hours</option>
+                        <option value="1d">1 Day</option>
+                        <option value="1w">1 Week</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders and Liquidation Row -->
+        <div class="row mb-4 g-3">
+            <div class="col-lg-6">
+                <div class="orders-container card-dark">
+                    <h3>BTC Order Book</h3>
+                    <div class="progress-container">
+                        <div class="progress-labels">
+                            <span class="buy-label">BUY</span>
+                            <span class="sell-label">SELL</span>
+                        </div>
+                        <div id="progressBar" class="progress-bar">
+                            <div class="buy-progress"></div>
+                            <div class="sell-progress"></div>
+                        </div>
+                    </div>
+                    <div class="order-tables">
+                        <div class="order-table" id="bidTable">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Price (USDT)</th>
+                                        <th>Volume (BTC)</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                        <div class="order-table" id="askTable">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Price (USDT)</th>
+                                        <th>Volume (BTC)</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="liquidation-container card-dark">
+                    <div class="liquidation-header">
+                        <h3>BTC Liquidations</h3>
+                        <div class="timeframe-select">
+                            <select id="liquidationTimeframe" class="styled-select">
+                                <option value="1h">1 Hour</option>
+                                <option value="4h">4 Hours</option>
+                                <option value="1d">1 Day</option>
+                                <option value="1w">1 Week</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="liquidation-chart-container">
+                        <canvas id="liquidationChart"></canvas>
+                    </div>
+                    <div class="liquidation-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Long Liquidations:</span>
+                            <span class="stat-value" id="longLiquidated">$0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Short Liquidations:</span>
+                            <span class="stat-value" id="shortLiquidated">$0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- News Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="news-container card-dark">
+                    <div class="news-header">
+                        <h3>Latest Crypto News</h3>
+                        <div class="news-refresh">
+                            <i class="fas fa-sync-alt"></i>
+                            <span>Last updated: <span id="newsTime">Just now</span></span>
+                        </div>
+                    </div>
+                    <div class="news-items"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Structure -->
+<div class="btc-modal" id="btcModal">
+    <div class="btc-modal-content">
+      <span class="btc-modal-close">&times;</span>
+      <div class="btc-modal-body">
+        <h3>Coming Soon</h3>
+        <p>This feature is currently under development.</p>
+      </div>
+    </div>
+  </div>
+
+
+    <!--Footer-->
+    <footer class="app-footer">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h4>BTCDPUMP</h4>
+            <p>Bitcoin trading signals and market analysis</p>
+          </div>
+          <div class="footer-section">
+            <h4>Resources</h4>
+            <ul>
+              <li><a href="#">API Documentation</a></li>
+              <li><a href="#">Trading Guide</a></li>
+              <li><a href="#">Market Research</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h4>Community</h4>
+            <ul>
+              <li><a href="#"><i class="fab fa-telegram"></i> Telegram </a></li>
+              <li><a href="#"><i class="fab fa-discord"></i> Discord </a></li>
+              <li><a href="#"><i class="fab fa-x"></i> @btcdpump </a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h4>Legal</h4>
+            <ul>
+              <li><a href="#">Terms of Service</a></li>
+              <li><a href="#">Risk Disclosure</a></li>
+              <li><a href="#">About Us</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; <span id="currentYear"></span> BTCDPUMP. All rights reserved.</p>
+        </div>
+      </footer>
+
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
